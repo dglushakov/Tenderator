@@ -53,11 +53,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Tenderator.urls'
 
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'Tenderator', 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            'Tenderator\\templates'
+            TEMPLATES_DIR,
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -127,7 +128,7 @@ STATIC_URL = 'static/'
 # STATIC_ROOT = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # STATICFILES_DIRS = [BASE_DIR / "Tenderator/static", ]
-STATIC_DIR = os.path.join(BASE_DIR, 'Tenderator/static')
+STATIC_DIR = os.path.join(BASE_DIR, 'Tenderator', 'static')
 STATICFILES_DIRS = [STATIC_DIR, ]
 
 # Default primary key field type
