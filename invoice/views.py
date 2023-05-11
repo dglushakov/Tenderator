@@ -56,6 +56,7 @@ def save_invoice_to_csv(request, categories_and_manufacturers=''):
             for device in devices:
                 writer.writerow([device.device_name, device.device_description, "some other data"])
 
-    return redirect('invoice:index')
+    return FileResponse(open('invoice.csv', 'rb'))
+    # return redirect('invoice:index')
 
 
