@@ -90,7 +90,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -125,7 +124,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = '/static/'
-STATICFILES_DIRS = ['C:/Users/user/PycharmProjects/Tenderator/Tenderator/Tenderator/static']
+STATICFILES_DIRS = [BASE_DIR / "Tenderator/static", ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
