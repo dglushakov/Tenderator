@@ -30,6 +30,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'import_export',
     'invoice.apps.InvoiceConfig',
     'django.contrib.admin',
     'django.contrib.auth',
