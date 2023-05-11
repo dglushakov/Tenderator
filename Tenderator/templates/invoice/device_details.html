@@ -1,0 +1,23 @@
+{% extends 'index.html' %}
+{% block title %} this is new title {% endblock title %}
+{% block body %}
+    <div class="container bg-light">
+        <div class="row">
+            <div class="col">
+                {{ device.id }} {{ device.device_name }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                {{ device.device_category }} {{ device.device_manufacturer }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                {{ device.device_description }}
+            </div>
+
+        </div>
+    </div>
+
+{% endblock body %}

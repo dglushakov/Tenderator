@@ -1,0 +1,180 @@
+{% extends '../index.html' %}
+{% block title %} this is new title {% endblock title %}
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-3 sticky-top">
+                <div class="row mb-4  sticky-top">
+                    <div class="col">
+                        <ul class="list-group ">
+                            {% for category, manufacturer in devices_ordered.items %}
+                                {% if category.category_name|length > 0 %}
+                                    <li class="list-group-item bg-dark text-white">
+                                        <div class="row">
+                                            <div class="col">
+                                                <a class="text-decoration-none text-white"
+                                                   href="#{{ category.category_name }}">
+                                                    {{ category.category_name }}
+                                                </a>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-check form-switch float-end">
+                                                    <input class="form-check-input {{ category.category_name }}"
+                                                           type="checkbox"
+                                                           id="{{ category.category_name }}" checked>
+                                                    <label class="form-check-label"
+                                                           for="flexSwitchCheckChecked"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item ">
+                                        <ul class="list-group">
+                                            {% for manufacturer, devices in manufacturer.items %}
+                                                <li class="list-group-item bg-secondary bg-gradient text-white">
+                                                    <div class="row">
+                                                        <div class="col">
+
+                                                            <a class="text-decoration-none text-white"
+                                                               href="#{{ category }}{{ manufacturer }}">
+                                                                {{ manufacturer }}
+                                                            </a>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-check form-switch  float-end">
+                                                                <input class="form-check-input manufacturer_{{ manufacturer }} category_{{ category.category_name }}"
+                                                                       type="checkbox" id="flexSwitchCheckChecked"
+                                                                       checked>
+                                                                <label class="form-check-label manufacturer"
+                                                                       for="flexSwitchCheckChecked"></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </li>
+
+                                            {% endfor %}
+
+                                        </ul>
+                                    </li>
+
+                                {% endif %}
+                            {% endfor %}
+                            <li class="list-group-item text-decoration-none">
+                                <a href="{% url 'invoice:save_invoice_to_csv' categories_and_manufacturers='?' %}"
+                                   id="csv_save_url">
+                                    <button type="button" class="btn btn-success" id="csv_save_button">
+                                        Save to file
+                                    </button>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col">
+                <table class="table table-striped">
+                    {% for category, manufacturer in devices_ordered.items %}
+                        {% if category.category_name|length > 0 %}
+                            <tr class="bg-dark">
+                                <th colspan="2" class="text-white"> {{ category.category_name }} <a
+                                        id="{{ category.category_name }}"></a></th>
+                                {#                                <th>#}
+                                {#                                    <div class="form-check form-switch">#}
+                                {#                                        <input class="form-check-input {{ category.category_name }}" type="checkbox"#}
+                                {#                                               id="{{ category.category_name }}" checked>#}
+                                {#                                        <label class="form-check-label" for="flexSwitchCheckChecked"></label>#}
+                                {#                                    </div>#}
+                                {#                                </th>#}
+                            </tr>
+
+                            {% for manufacturer, devices in manufacturer.items %}
+                                <tr class="bg-secondary">
+                                    <th colspan="2" class="text-white"> {{ manufacturer }}
+                                        <a id="{{ category }}{{ manufacturer }}"></a></th>
+                                    {#                                    <th>#}
+                                    {#                                        <div class="form-check form-switch">#}
+                                    {#                                            <input class="form-check-input manufacturer_{{ manufacturer }} category_{{ category.category_name }}"#}
+                                    {#                                                   type="checkbox" id="flexSwitchCheckChecked"#}
+                                    {#                                                   checked>#}
+                                    {#                                            <label class="form-check-label manufacturer"#}
+                                    {#                                                   for="flexSwitchCheckChecked"></label>#}
+                                    {#                                        </div>#}
+                                    {#                                    </th>#}
+                                </tr>
+
+                                {% for device in devices %}
+                                    <tr>
+                                        <td>{{ device.device_name }}</td>
+                                        <td>{{ device.device_description }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </table>
+            </div>
+
+        </div>
+
+
+    </div>
+{% endblock body %}
+
+{% block javascript %}
+    {{ block.super }}
+    <script>
+        $(document).ready(function () {
+            {% for category, manufacturer in devices_ordered.items %}
+                {% if category.category_name|length > 0 %}
+                    $('.{{ category.category_name }}').change(function () {
+                        if (this.checked) {
+                            $('.category_{{ category.category_name }}').prop('checked', true);
+                        } else {
+                            $('.category_{{ category.category_name }}').prop('checked', false);
+                        }
+                    });
+                {% endif %}
+            {% endfor %}
+
+            $('#csv_save_button').on('click', function (event) {
+                event.preventDefault();
+                let categories_to_save = ""
+                $(".form-check-input").each(function () {
+                    if (this.checked) {
+                        let classList = this.className.split(/\s+/);
+                        let category_to_save = ""
+                        let manufacturer_to_save = ""
+                        classList.forEach(function (entry) {
+                            if (entry.startsWith('category_')) {
+                                category_to_save = entry.substring('category_'.length)
+                            }
+                            if (entry.startsWith('manufacturer_')) {
+                                manufacturer_to_save = entry.substring('manufacturer_'.length)
+                            }
+                        });
+                        if (manufacturer_to_save.length > 1) {
+                            categories_to_save = categories_to_save + category_to_save + ":" + manufacturer_to_save + ";"
+                        }
+                    }
+                });
+
+
+                console.log(categories_to_save)
+                {#here need to parse all checkboxes and send this data to the view as categories_and_manufacturers variable#}
+                {#Category1:brand1;Category1:brand2;Category1:brand3;Category2:brand1...#}
+                {#$('#csv_save_url').attr("href", generate_save_invoice_to_csv_url(categories_to_save))#}
+                window.location.href = generate_save_invoice_to_csv_url(categories_to_save);
+                {#call url using AJAX, ?#}
+                {#or change url on each checkbox change, then just use it?#}
+            });
+
+        });
+
+        function generate_save_invoice_to_csv_url(categories_and_manufacturers) {
+            return "{% url 'invoice:save_invoice_to_csv' categories_and_manufacturers='!' %}".replace("!", categories_and_manufacturers);
+        }
+    </script>
+{% endblock javascript %}
