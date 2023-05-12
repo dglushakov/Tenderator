@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
 
 from .models import Device, Category, Manufacturer
+import os
 
 
 # Create your views here.
@@ -39,7 +40,9 @@ def save_invoice_to_csv(request, categories_and_manufacturers=''):
     print(categories_and_manufacturers)
     import csv
 
-    with open('invoice.csv', 'w', newline='', encoding='utf-8') as csvfile:
+    # with open('invoice.csv', 'w', newline='', encoding='utf-8') as csvfile:
+    filepath = os.path.join('static', 'invoice.csv')
+    with open(filepath, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile, delimiter=' ')
 
         for elem in categories_and_manufacturers.split(";"):
@@ -56,7 +59,5 @@ def save_invoice_to_csv(request, categories_and_manufacturers=''):
             for device in devices:
                 writer.writerow([device.device_name, device.device_description, "some other data"])
 
-    return FileResponse(open('invoice.csv', 'rb'))
+    return FileResponse(open(filepath, 'rb'))
     # return redirect('invoice:index')
-
-
