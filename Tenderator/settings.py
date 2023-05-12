@@ -126,7 +126,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 # STATIC_ROOT = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = "/var/www/Tenderator/static/"
 # STATICFILES_DIRS = [BASE_DIR / "Tenderator/static", ]
 STATIC_DIR = os.path.join(BASE_DIR, 'Tenderator', 'static')
 STATICFILES_DIRS = [STATIC_DIR, ]
