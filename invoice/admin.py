@@ -15,9 +15,11 @@ class DeviceResource(resources.ModelResource):
                                        widget=ForeignKeyWidget(Manufacturer, 'manufacturer_name'))
 
     device_category = fields.Field(column_name='device_category', attribute='device_category',
-                                       widget=ForeignKeyWidget(Category, 'category_name'))
+                                   widget=ForeignKeyWidget(Category, 'category_name'))
+
     class Meta:
         model = Device
+        import_id_fields = ('id', 'device_name')
 
 
 class DeviceAdmin(ImportExportActionModelAdmin):
