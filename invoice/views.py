@@ -5,6 +5,8 @@ from django.views import generic
 from .models import Device, Category, Manufacturer
 import os
 
+from django.conf import settings as django_settings
+
 
 # Create your views here.
 class DetailView(generic.DetailView):
@@ -38,11 +40,18 @@ def index(request):
 def save_invoice_to_csv(request, categories_and_manufacturers=''):
     print('start')
     print(categories_and_manufacturers)
+    print(django_settings.STATIC_ROOT)
     import csv
 
     # with open('invoice.csv', 'w', newline='', encoding='utf-8') as csvfile:
-    filepath = os.path.join('static', 'invoice.csv')
-    with open(filepath, 'w', newline='', encoding='utf-8') as csvfile:
+    try:
+        filepath = os.path.join(django_settings.STATIC_ROOT, 'invoice.csv')
+        csvfile = open(filepath, 'w', newline='', encoding='utf-8')
+    except FileNotFoundError:
+        filepath = os.path.join('static', 'invoice.csv')
+        csvfile = open(filepath, 'w', newline='', encoding='utf-8')
+
+    with csvfile as csvfile:
         writer = csv.writer(csvfile, delimiter=' ')
 
         for elem in categories_and_manufacturers.split(";"):
