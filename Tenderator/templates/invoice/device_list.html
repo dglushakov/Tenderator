@@ -61,10 +61,10 @@
                                 {% endif %}
                             {% endfor %}
                             <li class="list-group-item text-decoration-none">
-                                <a href="{% url 'invoice:save_invoice_to_csv' categories_and_manufacturers='?' %}"
-                                   id="csv_save_url">
-                                    <button type="button" class="btn btn-success" id="csv_save_button">
-                                        Save to file
+                                <a href="{% url 'invoice:save_invoice_as_xls'  categories_and_manufacturers='?' %}"
+                                   id="xls_save_url">
+                                    <button type="button" class="btn btn-success" id="xls_save_button">
+                                        Save as XLS
                                     </button>
                                 </a>
                             </li>
@@ -81,28 +81,12 @@
                             <tr class="bg-dark">
                                 <th colspan="2" class="text-white"> {{ category.category_name }} <a
                                         id="{{ category.category_name }}"></a></th>
-                                {#                                <th>#}
-                                {#                                    <div class="form-check form-switch">#}
-                                {#                                        <input class="form-check-input {{ category.category_name }}" type="checkbox"#}
-                                {#                                               id="{{ category.category_name }}" checked>#}
-                                {#                                        <label class="form-check-label" for="flexSwitchCheckChecked"></label>#}
-                                {#                                    </div>#}
-                                {#                                </th>#}
                             </tr>
 
                             {% for manufacturer, devices in manufacturer.items %}
                                 <tr class="bg-secondary">
                                     <th colspan="2" class="text-white"> {{ manufacturer }}
                                         <a id="{{ category }}{{ manufacturer }}"></a></th>
-                                    {#                                    <th>#}
-                                    {#                                        <div class="form-check form-switch">#}
-                                    {#                                            <input class="form-check-input manufacturer_{{ manufacturer }} category_{{ category.category_name }}"#}
-                                    {#                                                   type="checkbox" id="flexSwitchCheckChecked"#}
-                                    {#                                                   checked>#}
-                                    {#                                            <label class="form-check-label manufacturer"#}
-                                    {#                                                   for="flexSwitchCheckChecked"></label>#}
-                                    {#                                        </div>#}
-                                    {#                                    </th>#}
                                 </tr>
 
                                 {% for device in devices %}
@@ -139,7 +123,8 @@
                 {% endif %}
             {% endfor %}
 
-            $('#csv_save_button').on('click', function (event) {
+
+            $('#xls_save_button').on('click', function (event) {
                 event.preventDefault();
                 let categories_to_save = ""
                 $(".form-check-input").each(function () {
@@ -166,15 +151,20 @@
                 {#here need to parse all checkboxes and send this data to the view as categories_and_manufacturers variable#}
                 {#Category1:brand1;Category1:brand2;Category1:brand3;Category2:brand1...#}
                 {#$('#csv_save_url').attr("href", generate_save_invoice_to_csv_url(categories_to_save))#}
+
+
+                {#window.location.href = generate_save_invoice_to_csv_url(categories_to_save);#}
                 window.location.href = generate_save_invoice_to_csv_url(categories_to_save);
-                {#call url using AJAX, ?#}
-                {#or change url on each checkbox change, then just use it?#}
             });
 
-        });
 
-        function generate_save_invoice_to_csv_url(categories_and_manufacturers) {
-            return "{% url 'invoice:save_invoice_to_csv' categories_and_manufacturers='!' %}".replace("!", categories_and_manufacturers);
-        }
+            function generate_save_invoice_to_csv_url(categories_and_manufacturers) {
+                return "{% url 'invoice:save_invoice_to_csv' categories_and_manufacturers='!' %}".replace("!", categories_and_manufacturers);
+            }
+
+            function generate_save_invoice_to_xls_url(categories_and_manufacturers) {
+                return "{% url 'invoice:save_invoice_as_xls' categories_and_manufacturers='!' %}".replace("!", categories_and_manufacturers);
+            }
+        });
     </script>
 {% endblock javascript %}

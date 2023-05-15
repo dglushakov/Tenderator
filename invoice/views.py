@@ -6,6 +6,8 @@ from .models import Device, Category, Manufacturer
 import os
 
 from django.conf import settings as django_settings
+from django.http import HttpResponse
+from .resources import DeviceResource
 
 
 # Create your views here.
@@ -70,3 +72,26 @@ def save_invoice_to_csv(request, categories_and_manufacturers=''):
 
     return FileResponse(open(filepath, 'rb'))
     # return redirect('invoice:index')
+
+
+def save_invoice_as_xls(request, categories_and_manufacturers=''):
+    # print(categories_and_manufacturers)
+
+    device_resource = DeviceResource()
+    queryset = Device.objects \
+        .filter(device_category__category_name='СОТ', device_manufacturer__manufacturer_name='Bolid') \
+        .order_by('device_category', 'device_manufacturer')
+    dataset = device_resource.export(queryset)
+
+    queryset1 = Device.objects \
+        .filter(device_category__category_name='СОТ', device_manufacturer__manufacturer_name='HikVision') \
+        .order_by('device_category', 'device_manufacturer')
+
+    # dataset.append(device_resource.export(queryset1))
+
+    # dataset+= device_resource.export(queryset1)
+
+    print(dataset)
+    response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="invoice.xls"'
+    return response
