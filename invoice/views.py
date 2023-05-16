@@ -79,14 +79,21 @@ def save_invoice_to_csv(request, categories_and_manufacturers=''):
 
 
 def save_invoice_as_xls(request, categories_and_manufacturers=''):
+    print(categories_and_manufacturers)
     columns_list = ['id', 'device_name', 'device_description', 'device_manufacturer', 'device_category']
     results_date_frame = pandas.DataFrame([], columns=columns_list)
 
     for elem in categories_and_manufacturers.split(";"):
-        category = elem[:elem.find(":")].strip()
-        manufacturer = elem[elem.find(":") + 1:].strip()
+        try:
+            category = int(elem[:elem.find(":")].strip())
+            manufacturer = int(elem[elem.find(":") + 1:].strip())
+        except ValueError:
+            print('here is some problem')
+            continue
+        print('category: ', category, type(category))
+        print('manufacturer: ', manufacturer)
         devices = Device.objects \
-            .filter(device_category__category_name=category, device_manufacturer__manufacturer_name=manufacturer) \
+            .filter(device_category_id=category, device_manufacturer_id=manufacturer) \
             .order_by('device_category', 'device_manufacturer')
 
         for device in devices:

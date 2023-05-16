@@ -42,7 +42,7 @@
                                                         </div>
                                                         <div class="col">
                                                             <div class="form-check form-switch  float-end">
-                                                                <input class="form-check-input manufacturer_{{ manufacturer }} category_{{ category.category_name }}"
+                                                                <input class="form-check-input manufacturerID_{{ manufacturer.id }} categoryID_{{ category.id }}"
                                                                        type="checkbox" id="flexSwitchCheckChecked"
                                                                        checked>
                                                                 <label class="form-check-label manufacturer"
@@ -100,10 +100,7 @@
                     {% endfor %}
                 </table>
             </div>
-
         </div>
-
-
     </div>
 {% endblock body %}
 
@@ -111,18 +108,18 @@
     {{ block.super }}
     <script>
         $(document).ready(function () {
+
             {% for category, manufacturer in devices_ordered.items %}
                 {% if category.category_name|length > 0 %}
                     $('.{{ category.category_name }}').change(function () {
                         if (this.checked) {
-                            $('.category_{{ category.category_name }}').prop('checked', true);
+                            $('.categoryID_{{ category.id }}').prop('checked', true);
                         } else {
-                            $('.category_{{ category.category_name }}').prop('checked', false);
+                            $('.categoryID_{{ category.id }}').prop('checked', false);
                         }
                     });
                 {% endif %}
             {% endfor %}
-
 
             $('#xls_pandas_save_button').on('click', function (event) {
                 event.preventDefault();
@@ -133,14 +130,14 @@
                         let category_to_save = ""
                         let manufacturer_to_save = ""
                         classList.forEach(function (entry) {
-                            if (entry.startsWith('category_')) {
-                                category_to_save = entry.substring('category_'.length)
+                            if (entry.startsWith('categoryID_')) {
+                                category_to_save = entry.substring('categoryID_'.length)
                             }
-                            if (entry.startsWith('manufacturer_')) {
-                                manufacturer_to_save = entry.substring('manufacturer_'.length)
+                            if (entry.startsWith('manufacturerID_')) {
+                                manufacturer_to_save = entry.substring('manufacturerID_'.length)
                             }
                         });
-                        if (manufacturer_to_save.length > 1) {
+                        if (manufacturer_to_save > 0) {
                             categories_to_save = categories_to_save + category_to_save + ":" + manufacturer_to_save + ";"
                         }
                     }
@@ -151,13 +148,12 @@
                 {#here need to parse all checkboxes and send this data to the view as categories_and_manufacturers variable#}
                 {#Category1:brand1;Category1:brand2;Category1:brand3;Category2:brand1...#}
                 {#$('#csv_save_url').attr("href", generate_save_invoice_to_csv_url(categories_to_save))#}
-
                 window.location.href = generate_save_invoice_to_xls_url(categories_to_save);
             });
 
 
-            function generate_save_invoice_to_xls_url(categories_and_manufacturers) {
-                return "{% url 'invoice:save_invoice_as_xls' categories_and_manufacturers='!' %}".replace("!", categories_and_manufacturers);
+            function generate_save_invoice_to_xls_url(selected_categories_and_manufacturers) {
+                return "{% url 'invoice:save_invoice_as_xls' categories_and_manufacturers='!' %}".replace("!", selected_categories_and_manufacturers);
             }
         });
     </script>
