@@ -1,9 +1,13 @@
-from django.http import HttpResponse, FileResponse
+import io
+
+from django.http import HttpResponse, FileResponse, StreamingHttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
 
 from .models import Device, Category, Manufacturer
 import os
+import pandas
+from io import StringIO
 
 from django.conf import settings as django_settings
 from django.http import HttpResponse
@@ -75,23 +79,31 @@ def save_invoice_to_csv(request, categories_and_manufacturers=''):
 
 
 def save_invoice_as_xls(request, categories_and_manufacturers=''):
-    # print(categories_and_manufacturers)
+    columns_list = ['id', 'device_name', 'device_description', 'device_manufacturer', 'device_category']
+    results_date_frame = pandas.DataFrame([], columns=columns_list)
 
-    device_resource = DeviceResource()
-    queryset = Device.objects \
-        .filter(device_category__category_name='СОТ', device_manufacturer__manufacturer_name='Bolid') \
-        .order_by('device_category', 'device_manufacturer')
-    dataset = device_resource.export(queryset)
+    for elem in categories_and_manufacturers.split(";"):
+        category = elem[:elem.find(":")].strip()
+        manufacturer = elem[elem.find(":") + 1:].strip()
+        devices = Device.objects \
+            .filter(device_category__category_name=category, device_manufacturer__manufacturer_name=manufacturer) \
+            .order_by('device_category', 'device_manufacturer')
 
-    queryset1 = Device.objects \
-        .filter(device_category__category_name='СОТ', device_manufacturer__manufacturer_name='HikVision') \
-        .order_by('device_category', 'device_manufacturer')
+        for device in devices:
+            attributes_dict = {}
+            for column_name in columns_list:
+                attributes_dict[column_name] = getattr(device, column_name)
 
-    # dataset.append(device_resource.export(queryset1))
+            results_date_frame = pandas.concat([results_date_frame, pandas.DataFrame(attributes_dict, index=[0])],
+                                               ignore_index=True)
 
-    # dataset+= device_resource.export(queryset1)
+    with io.BytesIO() as b:
+        with pandas.ExcelWriter(b) as writer:
+            results_date_frame.to_excel(writer, index=False)
 
-    print(dataset)
-    response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="invoice.xls"'
-    return response
+        res = HttpResponse(
+            b.getvalue(),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        res['Content-Disposition'] = 'attachment; filename=invoice.xlsx'
+        return res

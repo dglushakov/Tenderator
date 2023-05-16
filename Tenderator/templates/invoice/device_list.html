@@ -62,9 +62,9 @@
                             {% endfor %}
                             <li class="list-group-item text-decoration-none">
                                 <a href="{% url 'invoice:save_invoice_as_xls'  categories_and_manufacturers='?' %}"
-                                   id="xls_save_url">
-                                    <button type="button" class="btn btn-success" id="xls_save_button">
-                                        Save as CSV
+                                   id="xls_pandas_save_url">
+                                    <button type="button" class="btn btn-success" id="xls_pandas_save_button">
+                                        Save as XLS
                                     </button>
                                 </a>
                             </li>
@@ -124,7 +124,7 @@
             {% endfor %}
 
 
-            $('#xls_save_button').on('click', function (event) {
+            $('#xls_pandas_save_button').on('click', function (event) {
                 event.preventDefault();
                 let categories_to_save = ""
                 $(".form-check-input").each(function () {
@@ -152,15 +152,9 @@
                 {#Category1:brand1;Category1:brand2;Category1:brand3;Category2:brand1...#}
                 {#$('#csv_save_url').attr("href", generate_save_invoice_to_csv_url(categories_to_save))#}
 
-
-                {#window.location.href = generate_save_invoice_to_csv_url(categories_to_save);#}
-                window.location.href = generate_save_invoice_to_csv_url(categories_to_save);
+                window.location.href = generate_save_invoice_to_xls_url(categories_to_save);
             });
 
-
-            function generate_save_invoice_to_csv_url(categories_and_manufacturers) {
-                return "{% url 'invoice:save_invoice_to_csv' categories_and_manufacturers='!' %}".replace("!", categories_and_manufacturers);
-            }
 
             function generate_save_invoice_to_xls_url(categories_and_manufacturers) {
                 return "{% url 'invoice:save_invoice_as_xls' categories_and_manufacturers='!' %}".replace("!", categories_and_manufacturers);

@@ -12,7 +12,7 @@ from .resources import DeviceResource
 class DeviceAdmin(ImportExportActionModelAdmin):
     resource_class = DeviceResource
     list_filter = ['device_manufacturer', 'device_category']
-    list_display = ('device_name', 'device_category', 'device_manufacturer')
+    list_display = ('id', 'device_name', 'device_category', 'device_manufacturer')
 
 
 admin.site.register(Device, DeviceAdmin)

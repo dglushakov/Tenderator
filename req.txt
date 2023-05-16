@@ -1,3 +1,5 @@
 django
 django-import-export
 psycopg2
+pandas
+xlsxwriter
