@@ -16,6 +16,9 @@ class Category(models.Model):
     def __str__(self):
         return self.category_name
 
+    class Meta:
+        verbose_name_plural = 'Categories'
+
 
 class Device(models.Model):
     device_name = models.CharField(max_length=200, unique=True)
